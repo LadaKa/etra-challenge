@@ -18,7 +18,30 @@ df_hyp1_fix <- df_hyp1_samples %>%
   group_by(participant_id, trial) %>% 
   do(detect.fixations(.)) 
  
-result  <- df_hyp1_fix %>% 
-  group_by(trial) %>% top_n(1, dur)  
+df_max_fixations  <- df_hyp1_fix %>% 
+  group_by(trial) %>% 
+  top_n(1, dur)  
+  
+df_min_LP <-  
+  df_hyp1_samples %>% 
+  filter(LP > 0 & RP > 0) %>%
+  group_by(trial) %>% 
+  top_n(1, -LP) 
+
+
+
+df_join <- 
+  inner_join(df_max_fixations, 
+             df_hyp1_samples, 
+             by=c('participant_id' = 'participant_id', 'trial' = 'trial')) %>% 
+  filter(time > start & time < end)
   
   
+  
+  
+  
+  
+  
+
+
+
