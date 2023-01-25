@@ -1,0 +1,24 @@
+library(dplyr)
+print(data_pth)
+local_data_pth <- here(data_pth, "data", "009")
+
+files <- dir(local_data_pth, pattern = ".*FreeViewing_Waldo_.*.csv") # get file names
+
+df_free_waldo <- files %>%
+  map(read_data) %>% 
+  reduce(rbind) %>% as_tibble()
+
+df_hyp1_samples <- 
+  df_free_waldo %>% 
+  rename(time = Time, trial = trial_id, x = LXpix, y = LYpix) %>% 
+  group_by( trial) %>% 
+  ungroup()
+
+df_hyp1_fix <- df_hyp1_samples %>% 
+  group_by(participant_id, trial) %>% 
+  do(detect.fixations(.)) 
+ 
+result  <- df_hyp1_fix %>% 
+  group_by(trial) %>% top_n(1, dur)  
+  
+  
